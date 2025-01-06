@@ -1,4 +1,3 @@
-// Wait for DOM to load
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize loading screen
     const loader = document.createElement('div');
@@ -19,28 +18,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mobile Menu Functionality
     const navLinks = document.getElementById('navLinks');
     const menuButton = document.querySelector('.menu-button');
+    const closeButton = document.querySelector('.close-menu');
 
     function toggleMenu() {
         navLinks.classList.toggle('active');
         document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : 'auto';
     }
 
-    if (menuButton) {
-        menuButton.addEventListener('click', toggleMenu);
-    }
+    // Menu button click handler
+    menuButton.addEventListener('click', toggleMenu);
+
+    // Close button click handler
+    closeButton.addEventListener('click', toggleMenu);
+
+    // Close menu when clicking on links
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (navLinks.classList.contains('active')) {
+                toggleMenu();
+            }
+        });
+    });
 
     // Close menu when clicking outside
     document.addEventListener('click', (e) => {
-        if (navLinks?.classList.contains('active') && 
-            !navLinks.contains(e.target) && 
-            !e.target.classList.contains('menu-button')) {
+        if (navLinks.classList.contains('active') &&
+            !navLinks.contains(e.target) &&
+            !menuButton.contains(e.target)) {
             toggleMenu();
         }
     });
 
     // Handle mobile menu on resize
     window.addEventListener('resize', debounce(() => {
-        if (window.innerWidth > 768 && navLinks?.classList.contains('active')) {
+        if (window.innerWidth > 768 && navLinks.classList.contains('active')) {
             toggleMenu();
         }
     }, 250));
@@ -170,33 +181,5 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
-    }
-
-    // Form validation if contact form exists
-    const contactForm = document.querySelector('.contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            validateForm(contactForm);
-        });
-    }
-
-    function validateForm(form) {
-        const inputs = form.querySelectorAll('input, textarea');
-        let isValid = true;
-
-        inputs.forEach(input => {
-            if (input.hasAttribute('required') && !input.value.trim()) {
-                isValid = false;
-                input.classList.add('error');
-            } else {
-                input.classList.remove('error');
-            }
-        });
-
-        if (isValid) {
-            // Add your form submission logic here
-            console.log('Form is valid - ready to submit');
-        }
     }
 });
